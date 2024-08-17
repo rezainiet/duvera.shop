@@ -68,7 +68,7 @@ const ProductPage = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:4000/create-order', {
+            const response = await fetch('https://duvera-shop-backend.vercel.app/create-order', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

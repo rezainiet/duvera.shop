@@ -6,7 +6,7 @@ const AllOrders = () => {
     useEffect(() => {
         const fetchAllOrders = async () => {
             try {
-                const response = await fetch('http://localhost:4000/orders');
+                const response = await fetch('https://duvera-shop-backend.vercel.app/orders');
                 const data = await response.json();
                 setOrders(data);
             } catch (error) {
@@ -19,7 +19,7 @@ const AllOrders = () => {
 
     const handleStatusChange = async (orderId, newStatus) => {
         try {
-            const response = await fetch(`http://localhost:4000/update-order-status/${orderId}`, {
+            const response = await fetch(`https://duvera-shop-backend.vercel.app/update-order-status/${orderId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

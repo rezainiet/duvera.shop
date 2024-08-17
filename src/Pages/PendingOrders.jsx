@@ -4,7 +4,7 @@ const PendingOrders = () => {
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:4000/orders/pending')
+        fetch('https://duvera-shop-backend.vercel.app/orders/pending')
             .then((response) => response.json())
             .then((data) => setOrders(data))
             .catch((error) => console.error('Error fetching pending orders:', error));
@@ -18,7 +18,7 @@ const PendingOrders = () => {
         );
 
         // Optionally, you can send an update request to the backend here
-        fetch(`http://localhost:4000/update-order-status/${id}`, {
+        fetch(`https://duvera-shop-backend.vercel.app/update-order-status/${id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

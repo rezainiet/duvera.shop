@@ -14,7 +14,7 @@ const OrdersPage = () => {
     useEffect(() => {
         const fetchOrdersData = async () => {
             try {
-                const response = await fetch('http://localhost:4000/orders/summary');
+                const response = await fetch('https://duvera-shop-backend.vercel.app/orders/summary');
                 const data = await response.json();
                 setOrders(data);
             } catch (error) {
