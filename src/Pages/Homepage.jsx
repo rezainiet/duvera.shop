@@ -44,28 +44,50 @@ const ProductPage = () => {
         }));
     };
 
-    const handleConfirmClick = () => {
+    const handleConfirmClick = async () => {
         if (!formData.name || !formData.phone || !formData.address || !formData.city) {
             alert("Please fill in all the required fields.");
             return;
         }
 
+
         const purchaseDate = new Date().toLocaleString();
         const productName = "6 Layer-Smart Rack";
         const shippingLocation = selectedShipping === 110 ? 'Outside Dhaka' : 'Inside Dhaka';
 
-        console.log('Product Name:', productName);
-        console.log('Purchase Date:', purchaseDate);
-        console.log('Customer Name:', formData.name);
-        console.log('Phone:', formData.phone);
-        console.log('Address:', formData.address);
-        console.log('City/Thana:', formData.city);
-        console.log('Quantity:', quantity);
-        console.log('Shipping Location:', shippingLocation);
-        console.log('Total Amount:', total);
+        const orderData = {
+            productName,
+            purchaseDate,
+            customerName: formData.name,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            quantity,
+            shippingLocation,
+            totalAmount: total,
+            orderStatus: "pending",
+        };
 
-        setShowPopup(false);
-        setFormData({ name: '', phone: '', address: '', city: '' });
+        try {
+            const response = await fetch('http://localhost:4000/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData),
+            });
+
+            if (response.ok) {
+                alert('Order placed successfully!');
+                setShowPopup(false);
+                setFormData({ name: '', phone: '', address: '', city: '' });
+            } else {
+                alert('Failed to place order. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error placing order:', error);
+            alert('An error occurred. Please try again later.');
+        }
     };
 
     const handleClosePopup = () => {
