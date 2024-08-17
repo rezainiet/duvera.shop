@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import productData from '../productData';
 
 const ProductPage = () => {
-    const [selectedImage, setSelectedImage] = useState("https://via.placeholder.com/600");
-    const [selectedShipping, setSelectedShipping] = useState(110); // Default shipping outside Dhaka
+    const [selectedImage, setSelectedImage] = useState(productData.images[0]);
+    const [selectedShipping, setSelectedShipping] = useState(productData.shippingOptions[0].cost); // Default shipping outside Dhaka
     const [quantity, setQuantity] = useState(1);
     const [showPopup, setShowPopup] = useState(false);
     const [formData, setFormData] = useState({
@@ -11,13 +12,6 @@ const ProductPage = () => {
         address: '',
         city: ''
     });
-
-    const productImages = [
-        "https://via.placeholder.com/600",
-        "https://via.placeholder.com/600?text=Image2",
-        "https://via.placeholder.com/600?text=Image3",
-        "https://via.placeholder.com/600?text=Image4"
-    ];
 
     const handleImageClick = (image) => {
         setSelectedImage(image);
@@ -30,7 +24,7 @@ const ProductPage = () => {
         });
     };
 
-    const total = (790 * quantity) + selectedShipping;
+    const total = (productData.price * quantity) + selectedShipping;
 
     const handlePurchaseClick = () => {
         setShowPopup(true);
@@ -51,18 +45,17 @@ const ProductPage = () => {
         }
 
         // Basic phone number validation
-        const phoneRegex = /^[0-9]{11}$/; // Example: 10 digits
+        const phoneRegex = /^[0-9]{11}$/; // Example: 11 digits
         if (!phoneRegex.test(formData.phone)) {
             alert("Please enter a valid phone number.");
             return;
         }
 
         const purchaseDate = new Date().toLocaleString();
-        const productName = "6 Layer-Smart Rack";
         const shippingLocation = selectedShipping === 110 ? 'Outside Dhaka' : 'Inside Dhaka';
 
         const orderData = {
-            productName,
+            productName: productData.productName,
             purchaseDate,
             customerName: formData.name,
             phone: formData.phone,
@@ -71,7 +64,7 @@ const ProductPage = () => {
             quantity,
             shippingLocation,
             totalAmount: total,
-            orderStatus: "pending",
+            status: "Pending",
         };
 
         try {
@@ -107,9 +100,9 @@ const ProductPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                 {/* Product Images Section */}
                 <div className="bg-white rounded-xl shadow-lg p-6">
-                    <div className="flex  lg:flex-row items-center gap-6">
+                    <div className="flex lg:flex-row items-center gap-6">
                         <div className="flex flex-col items-center gap-4 lg:items-start">
-                            {productImages.map((image, index) => (
+                            {productData.images.map((image, index) => (
                                 <img
                                     key={index}
                                     src={image}
@@ -133,14 +126,14 @@ const ProductPage = () => {
                 <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between">
                     {/* Product Info */}
                     <div className="mb-6">
-                        <h2 className="text-4xl font-bold mb-2 text-gray-800">6 Layer-Smart Rack</h2>
-                        <p className="text-3xl text-green-600 font-semibold mb-4">৳ 790.00</p>
-                        <p className="text-gray-700 mb-6">
-                            An innovative storage solution with a sleek and modern design. Perfect for decluttering and organizing any space.
-                        </p>
+                        <h2 className="text-4xl font-bold mb-2 text-gray-800">{productData.productName}</h2>
+                        <p className="text-3xl text-green-600 font-semibold mb-4">৳ {productData.price}.00</p>
+                        <p className="text-gray-700 mb-6">{productData.description}</p>
                         <div className="flex items-center space-x-3">
-                            <span className="text-yellow-500 text-2xl">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
-                            <span className="text-gray-600 text-lg">(120 reviews)</span>
+                            <span className="text-yellow-500 text-2xl">
+                                {'★'.repeat(productData.rating)}{'☆'.repeat(5 - productData.rating)}
+                            </span>
+                            <span className="text-gray-600 text-lg">({productData.reviews} reviews)</span>
                         </div>
                     </div>
 
@@ -164,30 +157,20 @@ const ProductPage = () => {
                         <div className="flex justify-between items-center mb-4">
                             <span className="text-gray-600">Shipping</span>
                             <div className="flex flex-col space-y-2">
-                                <label className="flex items-center">
-                                    <input
-                                        required
-                                        type="radio"
-                                        name="shipping"
-                                        value="110"
-                                        checked={selectedShipping === 110}
-                                        onChange={() => setSelectedShipping(110)}
-                                        className="mr-2"
-                                    />
-                                    ঢাকার বাহিরে: ৳ 110.00
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        required
-                                        type="radio"
-                                        name="shipping"
-                                        value="65"
-                                        checked={selectedShipping === 65}
-                                        onChange={() => setSelectedShipping(65)}
-                                        className="mr-2"
-                                    />
-                                    ঢাকার মধ্যে: ৳ 65.00
-                                </label>
+                                {productData.shippingOptions.map((option, index) => (
+                                    <label key={index} className="flex items-center">
+                                        <input
+                                            required
+                                            type="radio"
+                                            name="shipping"
+                                            value={option.cost}
+                                            checked={selectedShipping === option.cost}
+                                            onChange={() => setSelectedShipping(option.cost)}
+                                            className="mr-2"
+                                        />
+                                        {option.label}
+                                    </label>
+                                ))}
                             </div>
                         </div>
 
@@ -206,28 +189,6 @@ const ProductPage = () => {
                 </div>
             </div>
 
-            {/* Product Specifications Section */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-3xl font-bold mb-6 text-gray-800">Product Specifications</h3>
-                <ul className="list-disc list-inside space-y-4 text-gray-700 text-lg">
-                    <li>High-quality, eco-friendly materials ensure durability and sustainability.</li>
-                    <li>Compact design perfect for modern living spaces, maximizing efficiency.</li>
-                    <li>Tool-free assembly with easy-to-follow instructions.</li>
-                    <li>Lightweight, yet sturdy construction makes it easy to move and reposition.</li>
-                    <li>Minimalistic aesthetic that blends seamlessly with any interior decor.</li>
-                </ul>
-            </div>
-
-            {/* Additional Information Section */}
-            <div className="bg-white rounded-xl shadow-lg p-6 mt-12">
-                <h3 className="text-3xl font-bold mb-6 text-gray-800">Why Choose Our Product?</h3>
-                <p className="text-gray-700 text-lg mb-4">
-                    We prioritize quality and customer satisfaction. Our 6 Layer-Smart Rack is designed to meet the needs of modern households, offering a blend of functionality and style. Whether you're organizing your living room, bedroom, or office, this smart rack will enhance your space and make life easier.
-                </p>
-                <p className="text-gray-700 text-lg">
-                    Join thousands of satisfied customers who have made the switch to smarter, more efficient living with our 6 Layer-Smart Rack. Order yours today and experience the difference!
-                </p>
-            </div>
 
             {/* Popup for Purchase Details */}
             {showPopup && (

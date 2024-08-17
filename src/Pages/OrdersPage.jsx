@@ -12,14 +12,14 @@ const OrdersPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchOrdersData = () => {
-            const data = {
-                total: 150,
-                pending: 35,
-                delivered: 95,
-                shipping: 20,
-            };
-            setOrders(data);
+        const fetchOrdersData = async () => {
+            try {
+                const response = await fetch('http://localhost:4000/orders/summary');
+                const data = await response.json();
+                setOrders(data);
+            } catch (error) {
+                console.error('Failed to fetch orders summary:', error);
+            }
         };
 
         fetchOrdersData();
