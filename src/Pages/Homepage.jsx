@@ -50,6 +50,12 @@ const ProductPage = () => {
             return;
         }
 
+        // Basic phone number validation
+        const phoneRegex = /^[0-9]{11}$/; // Example: 10 digits
+        if (!phoneRegex.test(formData.phone)) {
+            alert("Please enter a valid phone number.");
+            return;
+        }
 
         const purchaseDate = new Date().toLocaleString();
         const productName = "6 Layer-Smart Rack";
