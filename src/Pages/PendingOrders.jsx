@@ -49,7 +49,7 @@ const PendingOrders = () => {
                         <tr className="bg-gray-200 text-gray-600 text-left text-sm uppercase font-medium">
                             <th className="py-3 px-4">Order Number</th>
                             <th className="py-3 px-4">Customer Name</th>
-                            <th className="py-3 px-4">Date</th>
+                            <th className="py-3 px-4">Color</th>
                             <th className="py-3 px-4">Status</th>
                             <th className="py-3 px-4">Action</th>
                         </tr>
@@ -59,7 +59,7 @@ const PendingOrders = () => {
                             <tr key={order._id} className="border-b border-gray-200 hover:bg-gray-50">
                                 <td className="py-3 px-4">{order.productName}</td>
                                 <td className="py-3 px-4">{order.customerName}</td>
-                                <td className="py-3 px-4">{order.purchaseDate}</td>
+                                <td className="py-3 px-4">{order.selectedColor}</td>
                                 <td className="py-3 px-4">
                                     <select
                                         value={order.status}

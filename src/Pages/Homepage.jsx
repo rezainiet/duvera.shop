@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import productData from '../productData';
+import WhatsAppButton from './WhatsAppButton';
 
 const ProductPage = () => {
-    const [selectedImage, setSelectedImage] = useState(productData.images[0]);
+    const [selectedColor, setSelectedColor] = useState(productData.colors[0]);
+    const [selectedImage, setSelectedImage] = useState(productData.images[productData.colors[0]][0]);
     const [selectedShipping, setSelectedShipping] = useState(productData.shippingOptions[0].cost); // Default shipping outside Dhaka
     const [quantity, setQuantity] = useState(1);
     const [showPopup, setShowPopup] = useState(false);
@@ -15,6 +17,11 @@ const ProductPage = () => {
 
     const handleImageClick = (image) => {
         setSelectedImage(image);
+    };
+
+    const handleColorChange = (color) => {
+        setSelectedColor(color);
+        setSelectedImage(productData.images[color][0]);
     };
 
     const handleQuantityChange = (increment) => {
@@ -56,6 +63,7 @@ const ProductPage = () => {
 
         const orderData = {
             productName: productData.productName,
+            selectedColor,
             purchaseDate,
             customerName: formData.name,
             phone: formData.phone,
@@ -97,175 +105,217 @@ const ProductPage = () => {
         <div className="container mx-auto p-6 md:p-12 bg-gray-100 min-h-screen">
             <h1 className="text-3xl font-extrabold text-center mb-10 text-green-400">Product Information</h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                 {/* Product Images Section */}
                 <div className="bg-white rounded-xl shadow-lg p-6">
-                    <div className="flex lg:flex-row items-center gap-6">
-                        <div className="flex flex-col items-center gap-4 lg:items-start">
-                            {productData.images.map((image, index) => (
-                                <img
-                                    key={index}
-                                    src={image}
-                                    alt={`Thumbnail ${index + 1}`}
-                                    className={`w-20 h-20 lg:w-24 lg:h-24 object-cover rounded-lg cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-105 ${selectedImage === image ? 'ring-4 ring-orange-500' : ''}`}
-                                    onClick={() => handleImageClick(image)}
-                                />
-                            ))}
-                        </div>
-                        <div className="w-full">
+                    <div className="flex flex-col lg:flex-row items-center gap-6">
+                        <div className="w-full lg:w-3/4">
                             <img
                                 src={selectedImage}
                                 alt="Product"
                                 className="w-full h-auto rounded-lg object-cover transition-transform duration-300 ease-in-out transform hover:scale-105"
                             />
                         </div>
+                        <div className="flex flex-row lg:flex-col lg:w-1/4 gap-4">
+                            {productData.images[selectedColor].map((image, index) => (
+                                <img
+                                    key={index}
+                                    src={image}
+                                    alt={`Thumbnail ${index + 1}`}
+                                    className={`w-16 h-16 lg:w-20 lg:h-20 object-cover rounded-lg cursor-pointer transition-transform ${selectedImage === image ? 'ring-2 ring-green-500' : ''}`}
+                                    onClick={() => handleImageClick(image)}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
 
                 {/* Product and Order Info Section */}
                 <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between">
+                    <div className='flex items-center justify-center my-5'>
+                        <button>
+                            <a href="#buyNowBtn" className='px-3 py-2 rounded bg-green-200 font-bold'>অর্ডার করতে এখানে ক্লিক করুন</a>
+                        </button>
+                    </div>
                     {/* Product Info */}
                     <div className="mb-6">
-                        <h2 className="text-4xl font-bold mb-2 text-gray-800">{productData.productName}</h2>
-                        <p className="text-3xl text-green-600 font-semibold mb-4">৳ {productData.price}.00</p>
-                        <p className="text-gray-700 mb-6">{productData.description}</p>
+                        <h2 className="text-2xl lg:text-4xl font-bold mb-2 text-gray-800">{productData.productName}</h2>
+                        <p className="text-xl lg:text-3xl text-green-600 font-semibold mb-4">৳ {productData.price}.00 <span className='text-orange-500 text-sm'>+ Delivery Charge</span></p>
+                        <p className='text-orange-500 text-sm'>Inside Dhaka (60 BDT) Outside Dhaka (110 BDT)</p>
+                        <p className="text-gray-700 mb-6 text-sm lg:text-base">{productData.description}</p>
                         <div className="flex items-center space-x-3">
-                            <span className="text-yellow-500 text-2xl">
+                            <span className="text-yellow-500 text-xl lg:text-2xl">
                                 {'★'.repeat(productData.rating)}{'☆'.repeat(5 - productData.rating)}
                             </span>
-                            <span className="text-gray-600 text-lg">({productData.reviews} reviews)</span>
+                            <span className="text-gray-600 text-sm lg:text-lg">({productData.reviews} reviews)</span>
                         </div>
+                    </div>
+
+                    {/* Color Selection */}
+                    <div className="mb-6">
+                        <h3 className="text-xl lg:text-2xl font-semibold text-gray-800 mb-4">Select Color</h3>
+                        <div className="flex flex-wrap gap-4">
+                            {productData.colors.map((color, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => handleColorChange(color)}
+                                    className={`px-4 py-2 rounded-lg font-semibold text-sm lg:text-base ${selectedColor === color ? 'bg-pink-500 text-white' : 'bg-gray-200 text-gray-800'}`}
+                                >
+                                    {color.charAt(0).toUpperCase() + color.slice(1)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Specifications */}
+                    <div className="mb-6">
+                        <h3 className="text-xl lg:text-2xl font-semibold text-gray-800 mb-4">Specifications</h3>
+                        <ul className="list-disc list-inside text-gray-600 space-y-2 text-sm lg:text-base">
+                            {productData.specifications.map((spec, index) => (
+                                <li key={index}>{spec}</li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Additional Information */}
+                    <div className="mb-6">
+                        <h3 className="text-xl lg:text-2xl font-semibold text-gray-800 mb-4">Additional Information</h3>
+                        <ul className="list-disc list-inside text-gray-600 space-y-2 text-sm lg:text-base">
+                            {productData.additionalInfo.map((info, index) => (
+                                <li key={index}>{info}</li>
+                            ))}
+                        </ul>
                     </div>
 
                     {/* Order Info */}
                     <div>
-                        <div className="flex justify-between items-center mb-4">
-                            <span className="text-gray-600">Quantity</span>
+                        <div className="flex flex-col lg:flex-row lg:justify-between items-center mb-4">
+                            <span className="text-gray-600 text-sm lg:text-base">Quantity</span>
                             <div className="flex items-center">
                                 <button
                                     onClick={() => handleQuantityChange(false)}
-                                    className="px-3 py-1 bg-gray-200 rounded-l-lg text-xl hover:bg-gray-300 transition-colors"
+                                    className="px-3 py-1 bg-gray-200 rounded-l-lg text-lg lg:text-xl hover:bg-gray-300 transition-colors"
                                 >-</button>
-                                <span className="px-4 py-2 bg-gray-100">{quantity}</span>
+                                <input
+                                    type="number"
+                                    value={quantity}
+                                    readOnly
+                                    className="w-16 text-center border-t border-b border-gray-300 text-lg lg:text-xl"
+                                />
                                 <button
                                     onClick={() => handleQuantityChange(true)}
-                                    className="px-3 py-1 bg-gray-200 rounded-r-lg text-xl hover:bg-gray-300 transition-colors"
+                                    className="px-3 py-1 bg-gray-200 rounded-r-lg text-lg lg:text-xl hover:bg-gray-300 transition-colors"
                                 >+</button>
                             </div>
                         </div>
-
-                        <div className="flex justify-between items-center mb-4">
-                            <span className="text-gray-600">Shipping</span>
-                            <div className="flex flex-col space-y-2">
+                        <div className="flex flex-col mb-4">
+                            <label htmlFor="shippingOptions" className="text-gray-600 mb-2 text-sm lg:text-base">Shipping Options</label>
+                            <select
+                                id="shippingOptions"
+                                value={selectedShipping}
+                                onChange={(e) => setSelectedShipping(Number(e.target.value))}
+                                className="border border-gray-300 rounded-lg p-2 text-gray-800"
+                            >
                                 {productData.shippingOptions.map((option, index) => (
-                                    <label key={index} className="flex items-center">
-                                        <input
-                                            required
-                                            type="radio"
-                                            name="shipping"
-                                            value={option.cost}
-                                            checked={selectedShipping === option.cost}
-                                            onChange={() => setSelectedShipping(option.cost)}
-                                            className="mr-2"
-                                        />
-                                        {option.label}
-                                    </label>
+                                    <option key={index} value={option.cost}>
+                                        {option.label} ({option.cost} BDT)
+                                    </option>
                                 ))}
-                            </div>
+                            </select>
                         </div>
-
-                        <div className="flex justify-between items-center font-bold text-lg mb-4">
-                            <span>Total</span>
-                            <span>৳ {total}.00</span>
-                        </div>
-
-                        <button
-                            onClick={handlePurchaseClick}
-                            className="w-full bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 transition duration-300"
+                        <div className="flex items-center justify-between mb-6"
+                            id='buyNowBtn'
                         >
-                            অর্ডার কনফার্ম করুন
-                        </button>
+                            <span className="text-lg lg:text-xl font-bold text-gray-800">Total: ৳ {total}</span>
+                            <button
+                                onClick={handlePurchaseClick}
+                                className="px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors"
+                            >
+                                অর্ডার কনফার্ম করুন
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-
-            {/* Popup for Purchase Details */}
+            {/* Order Form Popup */}
             {showPopup && (
-                <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg relative">
-                        <button
-                            onClick={handleClosePopup}
-                            className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl"
-                        >
-                            &times;
-                        </button>
-                        <h2 className="text-2xl font-bold mb-4 text-gray-800">Please Fill Your Information</h2>
-                        <form className="space-y-4">
-                            <div>
-                                <label className="block text-gray-600">Full Name *</label>
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/2 lg:w-1/3">
+                        <h3 className="text-xl font-semibold mb-4">আপনার তথ্য দিন</h3>
+                        <form>
+                            <div className="mb-4">
+                                <label htmlFor="name" className="block text-sm font-medium text-gray-600">নাম : *</label>
                                 <input
                                     type="text"
+                                    id="name"
                                     name="name"
                                     value={formData.name}
                                     onChange={handleInputChange}
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-lg"
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-gray-600">Phone Number *</label>
+                            <div className="mb-4">
+                                <label htmlFor="phone" className="block text-sm font-medium text-gray-600">মোবাইল নং : *</label>
                                 <input
                                     type="text"
+                                    id="phone"
                                     name="phone"
                                     value={formData.phone}
                                     onChange={handleInputChange}
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-lg"
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-gray-600">Full Address *</label>
+                            <div className="mb-4">
+                                <label htmlFor="address" className="block text-sm font-medium text-gray-600">ঠিকানা : *</label>
                                 <input
                                     type="text"
+                                    id="address"
                                     name="address"
                                     value={formData.address}
                                     onChange={handleInputChange}
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-lg"
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-gray-600">City/Thana *</label>
+                            <div className="mb-4">
+                                <label htmlFor="city" className="block text-sm font-medium text-gray-600">শহর / থানা: *</label>
                                 <input
                                     type="text"
+                                    id="city"
                                     name="city"
                                     value={formData.city}
                                     onChange={handleInputChange}
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-lg"
                                     required
                                 />
                             </div>
-                            <div className="flex justify-between">
+                            <div className="flex justify-end space-x-4">
                                 <button
-                                    onClick={handleConfirmClick}
                                     type="button"
-                                    className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition duration-300"
-                                >
-                                    Confirm
-                                </button>
-                                <button
                                     onClick={handleClosePopup}
-                                    type="button"
-                                    className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+                                    className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-colors"
                                 >
                                     Close
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleConfirmClick}
+                                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                                >
+                                    Confirm
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
+
+            {/* Floating WhatsApp Button */}
+            <WhatsAppButton />
+
         </div>
     );
 };
